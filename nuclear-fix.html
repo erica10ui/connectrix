@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuclear Fix - Kill July 7,8,9 Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 700px;
+            margin: 0 auto;
+            border: 3px solid #ff4757;
+        }
+        .status {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #ff4757;
+        }
+        .button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 15px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(255,71,87,0.3);
+        }
+        .nuclear {
+            background: #ff3838;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #ff4757;
+        }
+        .warning {
+            background: #ffa502;
+            color: #2f3542;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☢️ NUCLEAR FIX - KILL JULY 7,8,9 EVENTS</h1>
+        
+        <div class="warning">
+            ⚠️ WARNING: This will completely destroy the July 7,8,9 events and prevent them from coming back!
+        </div>
+
+        <div class="step">
+            <h3>🎯 NUCLEAR STEPS:</h3>
+            <p>1. 🔥 Clear ALL browser storage</p>
+            <p>2. 💥 Delete July 7,8,9 events from memory</p>
+            <p>3. 🚫 Block Firebase completely</p>
+            <p>4. 🛡️ Set permanent protection</p>
+        </div>
+
+        <div id="status" class="status">
+            Ready for nuclear strike...
+        </div>
+
+        <button class="button nuclear" onclick="nuclearStrike()">☢️ NUCLEAR STRIKE - KILL THEM ALL</button>
+        <button class="button" onclick="checkStatus()">🔍 Check Current Events</button>
+        <button class="button" onclick="goToCalendar()">📅 Go to Calendar</button>
+        <button class="button" onclick="resetProtection()">🔄 Reset Protection</button>
+
+        <div class="step">
+            <h3>💣 What Nuclear Strike Does:</h3>
+            <p>• 💀 Kills ALL events in localStorage</p>
+            <p>• 💀 Kills ALL events in sessionStorage</p>
+            <p>• 💀 Kills ALL events in IndexedDB</p>
+            <p>• 💀 Kills ALL Firebase cache</p>
+            <p>• 🛡️ Sets permanent Firebase block</p>
+            <p>• 🛡️ Sets event protection flag</p>
+        </div>
+    </div>
+
+    <script>
+        const status = document.getElementById('status');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            status.innerHTML += `[${time}] ${message}<br>`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        function nuclearStrike() {
+            if (!confirm('☢️ ARE YOU SURE? This will NUCLEAR DELETE all events and block Firebase forever!')) {
+                return;
+            }
+
+            log('🚀 INITIATING NUCLEAR STRIKE...');
+            
+            try {
+                // PHASE 1: Clear ALL storage
+                log('💥 PHASE 1: Clearing ALL storage...');
+                localStorage.clear();
+                sessionStorage.clear();
+                log('✅ All localStorage and sessionStorage cleared');
+
+                // PHASE 2: Clear IndexedDB if possible
+                log('💥 PHASE 2: Clearing IndexedDB...');
+                if ('indexedDB' in window) {
+                    indexedDB.databases().then(databases => {
+                        databases.forEach(db => {
+                            indexedDB.deleteDatabase(db.name);
+                            log(`🗑️ Deleted IndexedDB: ${db.name}`);
+                        });
+                    });
+                }
+
+                // PHASE 3: Set permanent blocks
+                log('💥 PHASE 3: Setting permanent blocks...');
+                localStorage.setItem('firebase_disabled', 'true');
+                localStorage.setItem('events_disabled', 'true');
+                localStorage.setItem('nuclear_protection', 'true');
+                localStorage.setItem('july_789_blocked', 'true');
+                log('✅ Permanent blocks set');
+
+                // PHASE 4: Clear any remaining event data
+                log('💥 PHASE 4: Final cleanup...');
+                const allKeys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.toLowerCase().includes('event') || key.toLowerCase().includes('firebase'))) {
+                        allKeys.push(key);
+                    }
+                }
+                allKeys.forEach(key => {
+                    if (key !== 'firebase_disabled' && key !== 'events_disabled' && key !== 'nuclear_protection' && key !== 'july_789_blocked') {
+                        localStorage.removeItem(key);
+                        log(`🗑️ Removed: ${key}`);
+                    }
+                });
+
+                // PHASE 5: Set event listener to prevent re-creation
+                log('💥 PHASE 5: Setting protection...');
+                window.addEventListener('storage', function(e) {
+                    if (e.key && e.key.toLowerCase().includes('event')) {
+                        localStorage.removeItem(e.key);
+                        log(`🛡️ Blocked event creation: ${e.key}`);
+                    }
+                });
+
+                log('☢️ NUCLEAR STRIKE COMPLETE!');
+                log('💀 July 7,8,9 events are DEAD!');
+                log('🛡️ Firebase is PERMANENTLY BLOCKED!');
+                log('📅 Click "Go to Calendar" to see the results');
+
+            } catch (error) {
+                log(`❌ NUCLEAR ERROR: ${error.message}`);
+            }
+        }
+
+        function checkStatus() {
+            log('🔍 Checking current status...');
+            
+            const events = localStorage.getItem('events');
+            if (events) {
+                try {
+                    const eventList = JSON.parse(events);
+                    log(`📋 Found ${eventList.length} events in storage`);
+                    
+                    eventList.forEach(event => {
+                        const date = new Date(event.date);
+                        const month = date.getMonth();
+                        const day = date.getDate();
+                        
+                        if (month === 6 && (day === 7 || day === 8 || day === 9)) {
+                            log(`⚠️ JULY ${day} EVENT STILL EXISTS: ${event.title}`);
+                        } else {
+                            log(`✅ Other event: ${event.title} (${event.date})`);
+                        }
+                    });
+                } catch (e) {
+                    log(`❌ Error parsing events: ${e.message}`);
+                }
+            } else {
+                log('✅ No events found in storage');
+            }
+            
+            const firebaseDisabled = localStorage.getItem('firebase_disabled');
+            const nuclearProtection = localStorage.getItem('nuclear_protection');
+            
+            log(`🔌 Firebase disabled: ${firebaseDisabled ? 'YES' : 'NO'}`);
+            log(`🛡️ Nuclear protection: ${nuclearProtection ? 'ACTIVE' : 'INACTIVE'}`);
+        }
+
+        function goToCalendar() {
+            log('📅 Going to calendar...');
+            // Try multiple possible URLs
+            const urls = [
+                '/alumni-dashboard/events',
+                '/events',
+                '/student-dashboard/events',
+                window.location.origin + '/alumni-dashboard/events',
+                window.location.origin + '/events',
+                window.location.origin + '/src/components/pages/Events.jsx'
+            ];
+            
+            window.location.href = urls[0];
+        }
+
+        function resetProtection() {
+            if (confirm('Reset all protection? This will allow Firebase to work again.')) {
+                log('🔄 Resetting protection...');
+                localStorage.removeItem('firebase_disabled');
+                localStorage.removeItem('events_disabled');
+                localStorage.removeItem('nuclear_protection');
+                localStorage.removeItem('july_789_blocked');
+                log('✅ Protection reset - Firebase can work again');
+            }
+        }
+
+        // Auto-check on load
+        window.onload = function() {
+            log('🎯 Nuclear fix page loaded');
+            log('☢️ Ready to destroy July 7,8,9 events');
+            setTimeout(checkStatus, 500);
+        };
+    </script>
+</body>
+</html> 

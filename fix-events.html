@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Events - Delete July 7,8,9</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #c82333;
+        }
+        .success {
+            background: #28a745;
+        }
+        .success:hover {
+            background: #218838;
+        }
+        .info {
+            background: #17a2b8;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Events - Delete July 7, 8, 9</h1>
+        
+        <div class="info">
+            <strong>Problem:</strong> Events on July 7, 8, and 9 keep coming back after refresh because they're stored in Firebase.
+        </div>
+
+        <div id="log" class="log">
+            Ready to fix the events...
+        </div>
+
+        <button onclick="deleteJuly789()">🗑️ Delete July 7,8,9 Events</button>
+        <button onclick="clearAllEvents()" class="success">☢️ Clear ALL Events</button>
+        <button onclick="disableFirebase()">🔌 Disable Firebase</button>
+        <button onclick="goToCalendar()">📅 Go to Calendar</button>
+
+        <div class="info">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Click "Delete July 7,8,9 Events" to remove only those specific events</li>
+                <li>If that doesn't work, click "Clear ALL Events" to remove everything</li>
+                <li>Click "Disable Firebase" to prevent events from being re-loaded</li>
+                <li>Click "Go to Calendar" to return to your calendar</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `[${timestamp}] ${message}<br>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function deleteJuly789() {
+            addLog('🎯 Starting deletion of July 7, 8, 9 events...');
+            
+            try {
+                // Get current events from localStorage
+                const storedEvents = localStorage.getItem('events');
+                if (storedEvents) {
+                    const events = JSON.parse(storedEvents);
+                    addLog(`📋 Found ${events.length} events in localStorage`);
+                    
+                    // Filter out July 7, 8, 9 events
+                    const filteredEvents = events.filter(event => {
+                        const eventDate = new Date(event.date);
+                        const month = eventDate.getMonth(); // 6 for July (0-indexed)
+                        const day = eventDate.getDate();
+                        
+                        // Keep events that are NOT on July 7, 8, or 9
+                        const shouldKeep = !(month === 6 && (day === 7 || day === 8 || day === 9));
+                        
+                        if (!shouldKeep) {
+                            addLog(`🗑️ Removing: ${event.title} (${event.date})`);
+                        }
+                        
+                        return shouldKeep;
+                    });
+                    
+                    addLog(`✅ Kept ${filteredEvents.length} events, removed ${events.length - filteredEvents.length} events`);
+                    
+                    // Update localStorage
+                    localStorage.setItem('events', JSON.stringify(filteredEvents));
+                    addLog('💾 Updated localStorage');
+                    
+                    // Clear any other event-related storage
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.toLowerCase().includes('event') && key !== 'events') {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                        addLog(`🗑️ Removed localStorage key: ${key}`);
+                    });
+                    
+                    addLog('✅ July 7, 8, 9 events deleted successfully!');
+                    addLog('🔄 You can now refresh your calendar page');
+                    
+                } else {
+                    addLog('📭 No events found in localStorage');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function clearAllEvents() {
+            if (confirm('Are you sure you want to delete ALL events? This cannot be undone.')) {
+                addLog('☢️ Clearing ALL events...');
+                
+                // Clear all localStorage
+                localStorage.clear();
+                addLog('🗑️ Cleared all localStorage');
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                addLog('🗑️ Cleared all sessionStorage');
+                
+                addLog('✅ All events cleared successfully!');
+                addLog('🔄 You can now refresh your calendar page');
+            }
+        }
+
+        function disableFirebase() {
+            if (confirm('Disable Firebase temporarily? This will prevent events from being loaded from the cloud.')) {
+                addLog('🔌 Disabling Firebase...');
+                
+                // Clear events
+                localStorage.removeItem('events');
+                
+                // Add a flag to prevent Firebase loading
+                localStorage.setItem('firebase_disabled', 'true');
+                addLog('🚫 Firebase disabled - events will not be loaded from cloud');
+                
+                addLog('✅ Firebase disabled successfully!');
+                addLog('🔄 You can now refresh your calendar page');
+            }
+        }
+
+        function goToCalendar() {
+            // Go back to the calendar page
+            window.location.href = '/alumni-dashboard/events';
+        }
+
+        // Auto-run deletion on page load
+        window.onload = function() {
+            addLog('🚀 Page loaded - ready to fix events');
+            addLog('Click "Delete July 7,8,9 Events" to start');
+        };
+    </script>
+</body>
+</html> 

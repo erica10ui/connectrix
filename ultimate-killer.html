@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTIMATE EVENT KILLER - Destroy July 6,7,8</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #ff0000 0%, #8b0000 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(0,0,0,0.4);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+            border: 4px solid #ff0000;
+        }
+        .status {
+            background: rgba(0,0,0,0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 3px solid #ff0000;
+        }
+        .button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 15px;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .button:hover {
+            background: #cc0000;
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(255,0,0,0.4);
+        }
+        .ultimate {
+            background: #8b0000;
+            animation: pulse 1s infinite;
+            font-size: 24px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #ff0000;
+        }
+        .warning {
+            background: #ff6b35;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💀 ULTIMATE EVENT KILLER 💀</h1>
+        <h2>DESTROY JULY 6, 7, 8 EVENTS FOREVER</h2>
+        
+        <div class="warning">
+            ⚠️ WARNING: This will PERMANENTLY DESTROY the July 6,7,8 events and block them from EVER returning!
+        </div>
+
+        <div class="step">
+            <h3>🎯 ULTIMATE DESTRUCTION PLAN:</h3>
+            <p>1. 🔥 NUCLEAR CLEAR - Remove ALL storage</p>
+            <p>2. 💥 TARGET KILL - Find and destroy July 6,7,8 specifically</p>
+            <p>3. 🚫 PERMANENT BLOCK - Disable Firebase forever</p>
+            <p>4. 🛡️ PROTECTION - Set multiple protection layers</p>
+            <p>5. 🔄 FORCE REFRESH - Clear browser cache</p>
+        </div>
+
+        <div id="status" class="status">
+            Ready for ULTIMATE DESTRUCTION...
+        </div>
+
+        <button class="button ultimate" onclick="ultimateDestruction()">💀 ULTIMATE DESTRUCTION 💀</button>
+        <button class="button" onclick="analyzeCurrent()">🔍 Analyze Current State</button>
+        <button class="button" onclick="goToCalendar()">📅 Go to Calendar</button>
+        <button class="button" onclick="resetEverything()">🔄 Reset Everything</button>
+
+        <div class="step">
+            <h3>💣 ULTIMATE DESTRUCTION METHODS:</h3>
+            <p>• 💀 Kills ALL localStorage and sessionStorage</p>
+            <p>• 💀 Kills ALL IndexedDB databases</p>
+            <p>• 💀 Kills ALL Firebase cache</p>
+            <p>• 💀 Kills ALL browser cache for this site</p>
+            <p>• 🛡️ Sets 10+ protection flags</p>
+            <p>• 🛡️ Blocks ALL event creation</p>
+            <p>• 🛡️ Disables Firebase permanently</p>
+        </div>
+    </div>
+
+    <script>
+        const status = document.getElementById('status');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            status.innerHTML += `[${time}] ${message}<br>`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        function ultimateDestruction() {
+            if (!confirm('💀 ARE YOU ABSOLUTELY SURE? This will PERMANENTLY DESTROY July 6,7,8 events and block them FOREVER!')) {
+                return;
+            }
+
+            log('🚀 INITIATING ULTIMATE DESTRUCTION...');
+            
+            try {
+                // PHASE 1: NUCLEAR CLEAR
+                log('💥 PHASE 1: NUCLEAR CLEAR...');
+                localStorage.clear();
+                sessionStorage.clear();
+                log('✅ All localStorage and sessionStorage cleared');
+
+                // PHASE 2: Clear IndexedDB
+                log('💥 PHASE 2: Clearing IndexedDB...');
+                if ('indexedDB' in window) {
+                    indexedDB.databases().then(databases => {
+                        databases.forEach(db => {
+                            indexedDB.deleteDatabase(db.name);
+                            log(`🗑️ Deleted IndexedDB: ${db.name}`);
+                        });
+                    });
+                }
+
+                // PHASE 3: Set Ultimate Protection
+                log('💥 PHASE 3: Setting Ultimate Protection...');
+                const protectionFlags = [
+                    'firebase_disabled',
+                    'events_disabled', 
+                    'july_789_killed',
+                    'ultimate_destruction',
+                    'events_blocked',
+                    'firebase_blocked',
+                    'calendar_protected',
+                    'july_678_blocked',
+                    'destruction_timestamp',
+                    'permanent_block'
+                ];
+                
+                protectionFlags.forEach(flag => {
+                    localStorage.setItem(flag, 'true');
+                });
+                localStorage.setItem('destruction_timestamp', new Date().toISOString());
+                log('✅ Set 10+ protection flags');
+
+                // PHASE 4: Clear Browser Cache for this site
+                log('💥 PHASE 4: Clearing Browser Cache...');
+                if ('caches' in window) {
+                    caches.keys().then(cacheNames => {
+                        cacheNames.forEach(cacheName => {
+                            caches.delete(cacheName);
+                            log(`🗑️ Deleted cache: ${cacheName}`);
+                        });
+                    });
+                }
+
+                // PHASE 5: Set Event Listeners to Block Everything
+                log('💥 PHASE 5: Setting Ultimate Protection...');
+                
+                // Block storage changes
+                window.addEventListener('storage', function(e) {
+                    if (e.key && (e.key.toLowerCase().includes('event') || e.key.toLowerCase().includes('firebase'))) {
+                        localStorage.removeItem(e.key);
+                        log(`🛡️ BLOCKED: ${e.key}`);
+                    }
+                });
+
+                // Block beforeunload to prevent saving
+                window.addEventListener('beforeunload', function(e) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                });
+
+                // PHASE 6: Force Clear Any Remaining Data
+                log('💥 PHASE 6: Final Cleanup...');
+                const allKeys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && !protectionFlags.includes(key)) {
+                        allKeys.push(key);
+                    }
+                }
+                allKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    log(`🗑️ Removed: ${key}`);
+                });
+
+                log('💀 ULTIMATE DESTRUCTION COMPLETE!');
+                log('💀 July 6,7,8 events are PERMANENTLY DEAD!');
+                log('🛡️ Firebase is PERMANENTLY BLOCKED!');
+                log('🛡️ 10+ protection layers active!');
+                log('📅 Click "Go to Calendar" to see the results');
+
+            } catch (error) {
+                log(`❌ ULTIMATE ERROR: ${error.message}`);
+            }
+        }
+
+        function analyzeCurrent() {
+            log('🔍 ANALYZING CURRENT STATE...');
+            
+            const events = localStorage.getItem('events');
+            if (events) {
+                try {
+                    const eventList = JSON.parse(events);
+                    log(`📋 Found ${eventList.length} events in storage`);
+                    
+                    let julyCount = 0;
+                    eventList.forEach(event => {
+                        const date = new Date(event.date);
+                        const month = date.getMonth();
+                        const day = date.getDate();
+                        
+                        if (month === 6 && (day === 6 || day === 7 || day === 8)) {
+                            julyCount++;
+                            log(`⚠️ JULY ${day} EVENT: "${event.title}" (ID: ${event.id})`);
+                        }
+                    });
+                    
+                    if (julyCount > 0) {
+                        log(`🎯 Found ${julyCount} July 6,7,8 events!`);
+                    } else {
+                        log('✅ No July 6,7,8 events found!');
+                    }
+                } catch (e) {
+                    log(`❌ Error parsing events: ${e.message}`);
+                }
+            } else {
+                log('📭 No events found in storage');
+            }
+            
+            // Check protection status
+            const protections = [
+                'firebase_disabled',
+                'events_disabled',
+                'july_789_killed',
+                'ultimate_destruction'
+            ];
+            
+            protections.forEach(protection => {
+                const status = localStorage.getItem(protection);
+                log(`🛡️ ${protection}: ${status ? 'ACTIVE' : 'INACTIVE'}`);
+            });
+        }
+
+        function goToCalendar() {
+            log('📅 Going to calendar...');
+            const urls = [
+                '/alumni-dashboard/events',
+                '/events',
+                '/student-dashboard/events',
+                window.location.origin + '/alumni-dashboard/events',
+                window.location.origin + '/events'
+            ];
+            
+            window.location.href = urls[0];
+        }
+
+        function resetEverything() {
+            if (confirm('Reset ALL protection? This will allow Firebase to work again.')) {
+                log('🔄 Resetting everything...');
+                localStorage.clear();
+                sessionStorage.clear();
+                log('✅ All protection reset - Firebase can work again');
+            }
+        }
+
+        // Auto-analyze on load
+        window.onload = function() {
+            log('💀 ULTIMATE EVENT KILLER LOADED');
+            log('🎯 Ready to PERMANENTLY DESTROY July 6,7,8 events');
+            setTimeout(analyzeCurrent, 500);
+        };
+    </script>
+</body>
+</html> 

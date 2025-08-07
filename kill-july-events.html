@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kill July 7,8,9 Events - Specialized Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .status {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ff4757;
+        }
+        .button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            background: #ff3742;
+            transform: scale(1.05);
+        }
+        .success { background: #28a745; }
+        .warning { background: #ffc107; color: #212529; }
+        .info { background: #17a2b8; }
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #ff4757;
+        }
+        .event-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 3px solid #ff4757;
+        }
+        .july-event {
+            background: rgba(255,71,87,0.3);
+            border-left-color: #ff4757;
+        }
+        .other-event {
+            background: rgba(40,167,69,0.3);
+            border-left-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Kill July 7,8,9 Events - Specialized Tool</h1>
+        
+        <div class="step">
+            <h3>🔍 Problem Analysis:</h3>
+            <p>• July 7,8,9 events are stored in Firebase</p>
+            <p>• They reload when you refresh the page</p>
+            <p>• Regular delete doesn't work because of firebaseId issues</p>
+            <p>• This tool will find and kill them specifically</p>
+        </div>
+
+        <div id="status" class="status">
+            Ready to analyze and kill July 7,8,9 events...
+        </div>
+
+        <button class="button" onclick="analyzeEvents()">🔍 Analyze Current Events</button>
+        <button class="button" onclick="killJulyEvents()">💀 Kill July 7,8,9 Events</button>
+        <button class="button success" onclick="goToCalendar()">📅 Go to Calendar</button>
+        <button class="button warning" onclick="clearAll()">☢️ Clear ALL Events</button>
+        <button class="button info" onclick="disableFirebase()">🔌 Disable Firebase</button>
+
+        <div class="step">
+            <h3>🎯 What This Tool Does:</h3>
+            <p>1. 🔍 Analyzes all events in localStorage</p>
+            <p>2. 🎯 Identifies July 7,8,9 events specifically</p>
+            <p>3. 💀 Removes them from localStorage</p>
+            <p>4. 🛡️ Sets protection to prevent re-loading</p>
+            <p>5. 🔌 Disables Firebase temporarily</p>
+        </div>
+    </div>
+
+    <script>
+        const status = document.getElementById('status');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            status.innerHTML += `[${time}] ${message}<br>`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        function analyzeEvents() {
+            log('🔍 ANALYZING CURRENT EVENTS...');
+            
+            const events = localStorage.getItem('events');
+            if (!events) {
+                log('📭 No events found in localStorage');
+                return;
+            }
+
+            try {
+                const eventList = JSON.parse(events);
+                log(`📋 Found ${eventList.length} total events`);
+                
+                let julyCount = 0;
+                let otherCount = 0;
+                
+                eventList.forEach((event, index) => {
+                    const date = new Date(event.date);
+                    const month = date.getMonth(); // 6 = July
+                    const day = date.getDate();
+                    const year = date.getFullYear();
+                    
+                    if (month === 6 && (day === 7 || day === 8 || day === 9)) {
+                        julyCount++;
+                        log(`⚠️ JULY ${day}, ${year} EVENT: "${event.title}" (ID: ${event.id}, FirebaseID: ${event.firebaseId || 'NONE'})`);
+                    } else {
+                        otherCount++;
+                        log(`✅ Other event: "${event.title}" (${event.date})`);
+                    }
+                });
+                
+                log(`📊 SUMMARY: ${julyCount} July 7,8,9 events, ${otherCount} other events`);
+                
+                if (julyCount > 0) {
+                    log('🎯 July 7,8,9 events found! Click "Kill July 7,8,9 Events" to remove them.');
+                } else {
+                    log('✅ No July 7,8,9 events found!');
+                }
+                
+            } catch (error) {
+                log(`❌ Error parsing events: ${error.message}`);
+            }
+        }
+
+        function killJulyEvents() {
+            if (!confirm('Are you sure you want to kill ALL July 7,8,9 events?')) {
+                return;
+            }
+
+            log('💀 KILLING JULY 7,8,9 EVENTS...');
+            
+            try {
+                const events = localStorage.getItem('events');
+                if (!events) {
+                    log('📭 No events to kill');
+                    return;
+                }
+
+                const eventList = JSON.parse(events);
+                log(`📋 Processing ${eventList.length} events...`);
+                
+                // Filter out July 7,8,9 events
+                const cleanEvents = eventList.filter(event => {
+                    const date = new Date(event.date);
+                    const month = date.getMonth();
+                    const day = date.getDate();
+                    
+                    if (month === 6 && (day === 7 || day === 8 || day === 9)) {
+                        log(`💀 KILLING: "${event.title}" (${event.date}) - ID: ${event.id}`);
+                        return false; // Remove this event
+                    }
+                    return true; // Keep this event
+                });
+                
+                log(`✅ KEPT: ${cleanEvents.length} events`);
+                log(`💀 KILLED: ${eventList.length - cleanEvents.length} July 7,8,9 events`);
+                
+                // Save cleaned events
+                localStorage.setItem('events', JSON.stringify(cleanEvents));
+                log('💾 Saved cleaned events to localStorage');
+                
+                // Set protection flags
+                localStorage.setItem('july_789_killed', 'true');
+                localStorage.setItem('firebase_disabled', 'true');
+                localStorage.setItem('kill_timestamp', new Date().toISOString());
+                log('🛡️ Set protection flags');
+                
+                // Clear any other event-related storage
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.toLowerCase().includes('event') && 
+                        key !== 'events' && 
+                        key !== 'july_789_killed' && 
+                        key !== 'firebase_disabled' && 
+                        key !== 'kill_timestamp') {
+                        keysToRemove.push(key);
+                    }
+                }
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                    log(`🗑️ Removed: ${key}`);
+                });
+                
+                log('🎉 JULY 7,8,9 EVENTS SUCCESSFULLY KILLED!');
+                log('🛡️ Firebase disabled to prevent re-loading');
+                log('📅 Click "Go to Calendar" to see the results');
+                
+            } catch (error) {
+                log(`❌ Error killing events: ${error.message}`);
+            }
+        }
+
+        function clearAll() {
+            if (!confirm('Are you sure you want to delete ALL events?')) {
+                return;
+            }
+            
+            log('☢️ CLEARING ALL EVENTS...');
+            localStorage.clear();
+            sessionStorage.clear();
+            log('✅ All events cleared!');
+        }
+
+        function disableFirebase() {
+            log('🔌 Disabling Firebase...');
+            localStorage.setItem('firebase_disabled', 'true');
+            localStorage.setItem('events_disabled', 'true');
+            log('✅ Firebase disabled - events won\'t load from cloud');
+        }
+
+        function goToCalendar() {
+            log('📅 Going to calendar...');
+            const urls = [
+                '/alumni-dashboard/events',
+                '/events',
+                '/student-dashboard/events',
+                window.location.origin + '/alumni-dashboard/events',
+                window.location.origin + '/events'
+            ];
+            
+            window.location.href = urls[0];
+        }
+
+        // Auto-analyze on load
+        window.onload = function() {
+            log('🎯 Specialized July 7,8,9 killer loaded');
+            log('🔍 Click "Analyze Current Events" to see what\'s there');
+        };
+    </script>
+</body>
+</html> 

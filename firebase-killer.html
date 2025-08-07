@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Killer - Delete July 6,7,8 from Database</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+            border: 3px solid #ff6b35;
+        }
+        .status {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ff6b35;
+        }
+        .button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #e55a2b;
+            transform: scale(1.05);
+        }
+        .firebase { background: #f7931e; }
+        .danger { background: #dc3545; }
+        .success { background: #28a745; }
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #ff6b35;
+        }
+        .warning {
+            background: #ffc107;
+            color: #212529;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Killer 🔥</h1>
+        <h2>Delete July 6,7,8 Events from Database</h2>
+        
+        <div class="warning">
+            ⚠️ This will directly delete July 6,7,8 events from Firebase database!
+        </div>
+
+        <div class="step">
+            <h3>🎯 Firebase Deletion Plan:</h3>
+            <p>1. 🔥 Connect to Firebase directly</p>
+            <p>2. 🔍 Find all July 6,7,8 events in database</p>
+            <p>3. 💀 Delete them from Firebase</p>
+            <p>4. 🛡️ Clear local storage</p>
+            <p>5. 🔄 Force calendar refresh</p>
+        </div>
+
+        <div id="status" class="status">
+            Ready to kill July 6,7,8 events in Firebase...
+        </div>
+
+        <button class="button firebase" onclick="killFromFirebase()">🔥 Kill from Firebase</button>
+        <button class="button" onclick="checkFirebase()">🔍 Check Firebase</button>
+        <button class="button danger" onclick="clearAllFirebase()">☢️ Clear ALL Firebase</button>
+        <button class="button success" onclick="goToCalendar()">📅 Go to Calendar</button>
+
+        <div class="step">
+            <h3>💣 What This Does:</h3>
+            <p>• 🔥 Connects directly to your Firebase database</p>
+            <p>• 🔍 Finds July 6,7,8 events by date</p>
+            <p>• 💀 Deletes them from the cloud database</p>
+            <p>• 🛡️ Clears local storage to prevent re-loading</p>
+            <p>• 🔄 Forces calendar to refresh</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const status = document.getElementById('status');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            status.innerHTML += `[${time}] ${message}<br>`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        // Firebase configuration - Connectrix project
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZc0RP-38SbnsEhQPwlidr7St5vqDD_fQ",
+            authDomain: "connectrix-32033.firebaseapp.com",
+            projectId: "connectrix-32033",
+            storageBucket: "connectrix-32033.appspot.com",
+            messagingSenderId: "902629175878",
+            appId: "1:902629175878:web:ca4b7196e9a6b40a285047",
+            measurementId: "G-BYMEBD20BX"
+        };
+
+        // Initialize Firebase
+        let app, db;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            log('✅ Firebase initialized successfully');
+        } catch (error) {
+            log('❌ Firebase initialization failed. Please check your config.');
+            log('💡 You need to replace the firebaseConfig with your actual Firebase settings');
+        }
+
+        async function killFromFirebase() {
+            if (!confirm('Are you sure you want to delete July 6,7,8 events from Firebase?')) {
+                return;
+            }
+
+            if (!db) {
+                log('❌ Firebase not initialized. Please check your configuration.');
+                return;
+            }
+
+            log('🔥 CONNECTING TO FIREBASE...');
+            
+            try {
+                // Get all events from Firebase
+                const querySnapshot = await getDocs(collection(db, 'events'));
+                log(`📋 Found ${querySnapshot.size} total events in Firebase`);
+                
+                let julyCount = 0;
+                const deletePromises = [];
+                
+                querySnapshot.forEach((document) => {
+                    const eventData = document.data();
+                    const eventDate = new Date(eventData.date);
+                    const month = eventDate.getMonth(); // 6 = July
+                    const day = eventDate.getDate();
+                    
+                    if (month === 6 && (day === 6 || day === 7 || day === 8)) {
+                        julyCount++;
+                        log(`🎯 Found July ${day} event: "${eventData.title}" (ID: ${document.id})`);
+                        
+                        // Add to deletion queue
+                        deletePromises.push(deleteDoc(doc(db, 'events', document.id)));
+                    }
+                });
+                
+                if (julyCount === 0) {
+                    log('✅ No July 6,7,8 events found in Firebase');
+                    return;
+                }
+                
+                log(`💀 Deleting ${julyCount} July 6,7,8 events from Firebase...`);
+                
+                // Delete all July 6,7,8 events
+                await Promise.all(deletePromises);
+                
+                log('✅ Successfully deleted July 6,7,8 events from Firebase!');
+                
+                // Clear local storage
+                log('🛡️ Clearing local storage...');
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Set protection flags
+                localStorage.setItem('firebase_disabled', 'true');
+                localStorage.setItem('july_678_deleted', 'true');
+                localStorage.setItem('deletion_timestamp', new Date().toISOString());
+                
+                log('🎉 FIREBASE DELETION COMPLETE!');
+                log('💀 July 6,7,8 events are DEAD in the cloud!');
+                log('📅 Click "Go to Calendar" to see the results');
+                
+            } catch (error) {
+                log(`❌ Firebase deletion error: ${error.message}`);
+                log('💡 Make sure your Firebase config is correct');
+            }
+        }
+
+        async function checkFirebase() {
+            if (!db) {
+                log('❌ Firebase not initialized');
+                return;
+            }
+
+            log('🔍 CHECKING FIREBASE DATABASE...');
+            
+            try {
+                const querySnapshot = await getDocs(collection(db, 'events'));
+                log(`📋 Found ${querySnapshot.size} total events in Firebase`);
+                
+                let julyCount = 0;
+                querySnapshot.forEach((document) => {
+                    const eventData = document.data();
+                    const eventDate = new Date(eventData.date);
+                    const month = eventDate.getMonth();
+                    const day = eventDate.getDate();
+                    
+                    if (month === 6 && (day === 6 || day === 7 || day === 8)) {
+                        julyCount++;
+                        log(`⚠️ JULY ${day} EVENT: "${eventData.title}" (ID: ${document.id})`);
+                    }
+                });
+                
+                if (julyCount > 0) {
+                    log(`🎯 Found ${julyCount} July 6,7,8 events in Firebase!`);
+                } else {
+                    log('✅ No July 6,7,8 events found in Firebase');
+                }
+                
+            } catch (error) {
+                log(`❌ Firebase check error: ${error.message}`);
+            }
+        }
+
+        async function clearAllFirebase() {
+            if (!confirm('Are you sure you want to delete ALL events from Firebase?')) {
+                return;
+            }
+
+            if (!db) {
+                log('❌ Firebase not initialized');
+                return;
+            }
+
+            log('☢️ CLEARING ALL FIREBASE EVENTS...');
+            
+            try {
+                const querySnapshot = await getDocs(collection(db, 'events'));
+                log(`📋 Found ${querySnapshot.size} events to delete`);
+                
+                const deletePromises = [];
+                querySnapshot.forEach((document) => {
+                    deletePromises.push(deleteDoc(doc(db, 'events', document.id)));
+                });
+                
+                await Promise.all(deletePromises);
+                log('✅ All Firebase events deleted!');
+                
+                // Clear local storage
+                localStorage.clear();
+                sessionStorage.clear();
+                
+            } catch (error) {
+                log(`❌ Firebase clear error: ${error.message}`);
+            }
+        }
+
+        function goToCalendar() {
+            log('📅 Going to calendar...');
+            const urls = [
+                '/alumni-dashboard/events',
+                '/events',
+                '/student-dashboard/events',
+                window.location.origin + '/alumni-dashboard/events',
+                window.location.origin + '/events'
+            ];
+            
+            window.location.href = urls[0];
+        }
+
+        // Make functions globally available
+        window.killFromFirebase = killFromFirebase;
+        window.checkFirebase = checkFirebase;
+        window.clearAllFirebase = clearAllFirebase;
+        window.goToCalendar = goToCalendar;
+
+        // Auto-check on load
+        window.onload = function() {
+            log('🔥 Firebase Killer loaded');
+            log('💡 You need to update the firebaseConfig with your actual Firebase settings');
+            log('🔍 Click "Check Firebase" to see current events');
+        };
+    </script>
+</body>
+</html> 

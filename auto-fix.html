@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Fix - Delete July 7,8,9 Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .status {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: left;
+        }
+        .button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+        .danger {
+            background: #dc3545;
+        }
+        .danger:hover {
+            background: #c82333;
+        }
+        .success {
+            background: #28a745;
+        }
+        .warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .warning:hover {
+            background: #e0a800;
+        }
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Auto Fix - Delete July 7, 8, 9 Events</h1>
+        
+        <div class="step">
+            <h3>📋 Instructions:</h3>
+            <p>1. This page will automatically delete the July 7, 8, 9 events</p>
+            <p>2. Click "Go to Calendar" after the fix is complete</p>
+            <p>3. The events should be gone!</p>
+        </div>
+
+        <div id="status" class="status">
+            Starting automatic fix...
+        </div>
+
+        <button class="button" onclick="goToCalendar()">📅 Go to Calendar</button>
+        <button class="button danger" onclick="clearAll()">☢️ Clear ALL Events</button>
+        <button class="button warning" onclick="disableFirebase()">🔌 Disable Firebase</button>
+        <button class="button" onclick="runFix()">🔄 Run Fix Again</button>
+
+        <div class="step">
+            <h3>🎯 What This Does:</h3>
+            <p>• Removes events on July 7, 8, 9</p>
+            <p>• Keeps all other events</p>
+            <p>• Clears browser storage</p>
+            <p>• Prevents Firebase from re-loading</p>
+        </div>
+    </div>
+
+    <script>
+        const status = document.getElementById('status');
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            status.innerHTML += `[${time}] ${message}<br>`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        function runFix() {
+            log('🚀 Starting automatic fix...');
+            
+            try {
+                // Step 1: Get current events
+                const storedEvents = localStorage.getItem('events');
+                if (storedEvents) {
+                    const events = JSON.parse(storedEvents);
+                    log(`📋 Found ${events.length} events`);
+                    
+                    // Step 2: Filter out July 7, 8, 9
+                    const cleanEvents = events.filter(event => {
+                        const date = new Date(event.date);
+                        const month = date.getMonth(); // 6 = July
+                        const day = date.getDate();
+                        
+                        if (month === 6 && (day === 7 || day === 8 || day === 9)) {
+                            log(`🗑️ Removing: ${event.title} (${event.date})`);
+                            return false;
+                        }
+                        return true;
+                    });
+                    
+                    log(`✅ Kept ${cleanEvents.length} events, removed ${events.length - cleanEvents.length} events`);
+                    
+                    // Step 3: Save cleaned events
+                    localStorage.setItem('events', JSON.stringify(cleanEvents));
+                    log('💾 Saved cleaned events');
+                    
+                    // Step 4: Clear other storage
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.toLowerCase().includes('event') && key !== 'events') {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                        log(`🗑️ Removed: ${key}`);
+                    });
+                    
+                    // Step 5: Disable Firebase temporarily
+                    localStorage.setItem('firebase_disabled', 'true');
+                    log('🔌 Firebase disabled');
+                    
+                    log('✅ Fix completed successfully!');
+                    log('🔄 Click "Go to Calendar" to see the results');
+                    
+                } else {
+                    log('📭 No events found - already clean!');
+                }
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to delete ALL events?')) {
+                log('☢️ Clearing ALL events...');
+                localStorage.clear();
+                sessionStorage.clear();
+                log('✅ All events cleared!');
+            }
+        }
+
+        function disableFirebase() {
+            log('🔌 Disabling Firebase...');
+            localStorage.setItem('firebase_disabled', 'true');
+            localStorage.removeItem('events');
+            log('✅ Firebase disabled - events won\'t load from cloud');
+        }
+
+        function goToCalendar() {
+            log('📅 Going to calendar...');
+            // Try different possible calendar URLs
+            const possibleUrls = [
+                '/alumni-dashboard/events',
+                '/events',
+                '/student-dashboard/events',
+                window.location.origin + '/alumni-dashboard/events',
+                window.location.origin + '/events'
+            ];
+            
+            // Try to redirect to calendar
+            window.location.href = possibleUrls[0];
+        }
+
+        // Auto-run the fix when page loads
+        window.onload = function() {
+            log('🎯 Page loaded - running automatic fix...');
+            setTimeout(runFix, 1000); // Wait 1 second then run
+        };
+    </script>
+</body>
+</html> 

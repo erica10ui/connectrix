@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Firebase Authentication Test</h1>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter email to test">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter password to test">
+        </div>
+        
+        <button onclick="testLogin()">🔐 Test Login</button>
+        <button onclick="testGoogleLogin()">🌐 Test Google Login</button>
+        <button onclick="checkCurrentUser()">👤 Check Current User</button>
+        <button onclick="clearLog()">🧹 Clear Log</button>
+        
+        <div id="message"></div>
+        <div id="log" class="log"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZc0RP-38SbnsEhQPwlidr7St5vqDD_fQ",
+            authDomain: "connectrix-32033.firebaseapp.com",
+            projectId: "connectrix-32033",
+            storageBucket: "connectrix-32033.firebasestorage.app",
+            messagingSenderId: "902629175878",
+            appId: "1:902629175878:web:ca4b7196e9a6b40a285047",
+            measurementId: "G-BYMEBD20BX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.log = function(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        window.showMessage = function(message, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+        };
+
+        window.testLogin = async function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                showMessage('Please enter both email and password', 'error');
+                return;
+            }
+
+            try {
+                log(`🔐 Testing login for: ${email}`);
+                
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                log(`✅ Login successful!`);
+                log(`👤 User: ${user.email}`);
+                log(`🆔 UID: ${user.uid}`);
+                log(`✅ Email Verified: ${user.emailVerified}`);
+                log(`📅 Last Sign In: ${user.metadata.lastSignInTime}`);
+                
+                // Check profile in Firestore
+                try {
+                    const userDoc = await getDoc(doc(db, 'profiles', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        log(`📋 Profile found in Firestore`);
+                        log(`👤 Role: ${userData.role}`);
+                        log(`📝 Name: ${userData.fullName || 'N/A'}`);
+                        log(`🚫 Blocked: ${userData.isBlocked || false}`);
+                    } else {
+                        log(`❌ No profile found in Firestore`);
+                    }
+                } catch (error) {
+                    log(`⚠️ Error checking profile: ${error.message}`);
+                }
+                
+                showMessage('Login test successful!', 'success');
+                
+            } catch (error) {
+                log(`❌ Login failed: ${error.code}`);
+                log(`📝 Error message: ${error.message}`);
+                
+                let userMessage = '';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        userMessage = 'No account found with this email.';
+                        break;
+                    case 'auth/wrong-password':
+                        userMessage = 'Incorrect password.';
+                        break;
+                    case 'auth/invalid-email':
+                        userMessage = 'Invalid email format.';
+                        break;
+                    case 'auth/user-disabled':
+                        userMessage = 'Account has been disabled.';
+                        break;
+                    case 'auth/too-many-requests':
+                        userMessage = 'Too many failed attempts. Try again later.';
+                        break;
+                    case 'auth/network-request-failed':
+                        userMessage = 'Network error. Check your connection.';
+                        break;
+                    default:
+                        userMessage = `Login failed: ${error.message}`;
+                }
+                
+                showMessage(userMessage, 'error');
+            }
+        };
+
+        window.testGoogleLogin = async function() {
+            try {
+                log(`🌐 Testing Google login...`);
+                
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                log(`✅ Google login successful!`);
+                log(`👤 User: ${user.email}`);
+                log(`🆔 UID: ${user.uid}`);
+                log(`✅ Email Verified: ${user.emailVerified}`);
+                log(`📅 Last Sign In: ${user.metadata.lastSignInTime}`);
+                
+                // Check profile in Firestore
+                try {
+                    const userDoc = await getDoc(doc(db, 'profiles', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        log(`📋 Profile found in Firestore`);
+                        log(`👤 Role: ${userData.role}`);
+                        log(`📝 Name: ${userData.fullName || 'N/A'}`);
+                    } else {
+                        log(`❌ No profile found in Firestore`);
+                    }
+                } catch (error) {
+                    log(`⚠️ Error checking profile: ${error.message}`);
+                }
+                
+                showMessage('Google login test successful!', 'success');
+                
+            } catch (error) {
+                log(`❌ Google login failed: ${error.code}`);
+                log(`📝 Error message: ${error.message}`);
+                showMessage(`Google login failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.checkCurrentUser = function() {
+            const user = auth.currentUser;
+            if (user) {
+                log(`👤 Current user: ${user.email}`);
+                log(`🆔 UID: ${user.uid}`);
+                log(`✅ Email Verified: ${user.emailVerified}`);
+                log(`📅 Last Sign In: ${user.metadata.lastSignInTime}`);
+                showMessage('User is signed in', 'success');
+            } else {
+                log(`❌ No user currently signed in`);
+                showMessage('No user signed in', 'error');
+            }
+        };
+
+        window.clearLog = function() {
+            document.getElementById('log').innerHTML = '';
+            document.getElementById('message').textContent = '';
+        };
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                log(`🔄 Auth state changed: User signed in - ${user.email}`);
+            } else {
+                log(`🔄 Auth state changed: User signed out`);
+            }
+        });
+
+        // Initialize
+        log('🚀 Firebase Auth Test Tool loaded');
+        log('📧 Enter email and password to test login');
+        log('🌐 Click "Test Google Login" for Google authentication');
+    </script>
+</body>
+</html> 

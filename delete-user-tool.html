@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Deletion Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="email"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #dc3545;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #c82333;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .user-email {
+            font-weight: bold;
+            color: #333;
+        }
+        .user-role {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ User Deletion Tool</h1>
+        
+        <div class="form-group">
+            <label for="userEmail">User Email:</label>
+            <input type="email" id="userEmail" placeholder="Enter user email to delete">
+        </div>
+        
+        <div class="form-group">
+            <label for="userUid">Or User UID:</label>
+            <input type="text" id="userUid" placeholder="Enter user UID to delete">
+        </div>
+        
+        <button onclick="deleteUser()" id="deleteBtn">🗑️ Delete User</button>
+        <button onclick="listUsers()" id="listBtn">📋 List All Users</button>
+        <button onclick="clearLog()" id="clearBtn">🧹 Clear Log</button>
+        
+        <div id="message"></div>
+        <div id="log" class="log"></div>
+        <div id="userList" class="user-list"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAuth, deleteUser, listUsers } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXq",
+            authDomain: "connectrix-32033.firebaseapp.com",
+            projectId: "connectrix-32033",
+            storageBucket: "connectrix-32033.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdefghijklmnop"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.log = function(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        window.showMessage = function(message, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+        };
+
+        window.deleteUser = async function() {
+            const email = document.getElementById('userEmail').value.trim();
+            const uid = document.getElementById('userUid').value.trim();
+            
+            if (!email && !uid) {
+                showMessage('Please enter either email or UID', 'error');
+                return;
+            }
+
+            const deleteBtn = document.getElementById('deleteBtn');
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = '🔄 Deleting...';
+
+            try {
+                let userId = uid;
+                
+                if (email) {
+                    log(`🔍 Looking for user with email: ${email}`);
+                    // Note: We can't get user by email with client SDK, so we'll work with UID
+                    showMessage('Please use UID for deletion, or use the backend script for email-based deletion', 'warning');
+                    return;
+                }
+
+                log(`🗑️ Starting complete deletion for user: ${userId}`);
+                
+                // 1. Delete user profile
+                try {
+                    await deleteDoc(doc(db, 'profiles', userId));
+                    log('✅ User profile deleted');
+                } catch (error) {
+                    log(`⚠️ Profile not found or already deleted: ${error.message}`);
+                }
+                
+                // 2. Clean up messages (sent by user)
+                const messagesRef = collection(db, 'messages');
+                const sentMessagesQuery = query(messagesRef, where('senderId', '==', userId));
+                const sentMessagesSnapshot = await getDocs(sentMessagesQuery);
+                const sentMessageDeletions = sentMessagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(sentMessageDeletions);
+                log(`✅ Deleted ${sentMessagesSnapshot.docs.length} messages sent by user`);
+                
+                // 3. Clean up messages (received by user)
+                const receivedMessagesQuery = query(messagesRef, where('receiverId', '==', userId));
+                const receivedMessagesSnapshot = await getDocs(receivedMessagesQuery);
+                const receivedMessageDeletions = receivedMessagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(receivedMessageDeletions);
+                log(`✅ Deleted ${receivedMessagesSnapshot.docs.length} messages received by user`);
+                
+                // 4. Clean up notifications
+                const notificationsRef = collection(db, 'notifications');
+                const notificationsQuery = query(notificationsRef, where('userId', '==', userId));
+                const notificationsSnapshot = await getDocs(notificationsQuery);
+                const notificationDeletions = notificationsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(notificationDeletions);
+                log(`✅ Deleted ${notificationsSnapshot.docs.length} notifications`);
+                
+                // 5. Clean up mentorship requests (as student)
+                const requestsRef = collection(db, 'mentorship_requests');
+                const studentRequestsQuery = query(requestsRef, where('studentId', '==', userId));
+                const studentRequestsSnapshot = await getDocs(studentRequestsQuery);
+                const studentRequestDeletions = studentRequestsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(studentRequestDeletions);
+                log(`✅ Deleted ${studentRequestsSnapshot.docs.length} mentorship requests as student`);
+                
+                // 6. Clean up mentorship requests (as mentor)
+                const mentorRequestsQuery = query(requestsRef, where('mentorId', '==', userId));
+                const mentorRequestsSnapshot = await getDocs(mentorRequestsQuery);
+                const mentorRequestDeletions = mentorRequestsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(mentorRequestDeletions);
+                log(`✅ Deleted ${mentorRequestsSnapshot.docs.length} mentorship requests as mentor`);
+                
+                // 7. Clean up ratings (as mentor)
+                const ratingsRef = collection(db, 'ratings');
+                const mentorRatingsQuery = query(ratingsRef, where('mentorId', '==', userId));
+                const mentorRatingsSnapshot = await getDocs(mentorRatingsQuery);
+                const mentorRatingDeletions = mentorRatingsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(mentorRatingDeletions);
+                log(`✅ Deleted ${mentorRatingsSnapshot.docs.length} ratings as mentor`);
+                
+                // 8. Clean up ratings (as student)
+                const studentRatingsQuery = query(ratingsRef, where('studentId', '==', userId));
+                const studentRatingsSnapshot = await getDocs(studentRatingsQuery);
+                const studentRatingDeletions = studentRatingsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(studentRatingDeletions);
+                log(`✅ Deleted ${studentRatingsSnapshot.docs.length} ratings as student`);
+                
+                // 9. Clean up events (if user created any)
+                const eventsRef = collection(db, 'events');
+                const eventsQuery = query(eventsRef, where('createdBy', '==', userId));
+                const eventsSnapshot = await getDocs(eventsQuery);
+                const eventDeletions = eventsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(eventDeletions);
+                log(`✅ Deleted ${eventsSnapshot.docs.length} events created by user`);
+                
+                // 10. Clean up activity logs
+                const activityRef = collection(db, 'activity_logs');
+                const activityQuery = query(activityRef, where('userId', '==', userId));
+                const activitySnapshot = await getDocs(activityQuery);
+                const activityDeletions = activitySnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(activityDeletions);
+                log(`✅ Deleted ${activitySnapshot.docs.length} activity logs`);
+                
+                log(`🎉 Complete user deletion finished for: ${userId}`);
+                showMessage('User deleted successfully!', 'success');
+                
+            } catch (error) {
+                log(`❌ Error during user deletion: ${error.message}`);
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = '🗑️ Delete User';
+            }
+        };
+
+        window.listUsers = async function() {
+            const listBtn = document.getElementById('listBtn');
+            listBtn.disabled = true;
+            listBtn.textContent = '🔄 Loading...';
+
+            try {
+                log('📋 Loading users...');
+                
+                // Get all profiles
+                const profilesRef = collection(db, 'profiles');
+                const profilesSnapshot = await getDocs(profilesRef);
+                
+                const userListDiv = document.getElementById('userList');
+                userListDiv.innerHTML = '';
+                
+                log(`👥 Found ${profilesSnapshot.docs.length} users:`);
+                
+                profilesSnapshot.docs.forEach(doc => {
+                    const userData = doc.data();
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user-item';
+                    userDiv.innerHTML = `
+                        <div class="user-email">${userData.email || 'No email'}</div>
+                        <div class="user-role">Role: ${userData.role || 'Unknown'} | UID: ${doc.id}</div>
+                    `;
+                    userListDiv.appendChild(userDiv);
+                    log(`📧 ${userData.email} (${userData.role}) - UID: ${doc.id}`);
+                });
+                
+                showMessage(`Found ${profilesSnapshot.docs.length} users`, 'success');
+                
+            } catch (error) {
+                log(`❌ Error listing users: ${error.message}`);
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                listBtn.disabled = false;
+                listBtn.textContent = '📋 List All Users';
+            }
+        };
+
+        window.clearLog = function() {
+            document.getElementById('log').innerHTML = '';
+            document.getElementById('message').textContent = '';
+            document.getElementById('userList').innerHTML = '';
+        };
+
+        // Initialize
+        log('🚀 User Deletion Tool loaded');
+        log('⚠️ Note: This tool can only delete Firestore data');
+        log('📝 For complete user deletion (including Auth), use the Node.js script');
+    </script>
+</body>
+</html> 

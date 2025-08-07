@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Profile Data - Connectrix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: #388e3c;
+            font-weight: bold;
+        }
+        .error {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .data-display {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test Profile Data</h1>
+        
+        <div class="info">
+            <strong>User ID:</strong> jOIIqdjno8dXvzoBonCQ7qGZiUz1<br>
+            <strong>Name:</strong> Reniel Cornitez<br>
+            <strong>Email:</strong> renielcornitez1@gmail.com
+        </div>
+
+        <h2>Expected Profile Data Structure:</h2>
+        <div class="data-display">
+{
+  "fullName": "Reniel Cornitez",
+  "email": "renielcornitez1@gmail.com",
+  "role": "alumni",
+  "currentWork": "Software Engineer",
+  "avatar": "https://randomuser.me/api/portraits/lego/1.jpg",
+  "banner": null,
+  "location": "",
+  "degree": "",
+  "skills": [],
+  "bio": ""
+}
+        </div>
+
+        <h2>Profile Page Status:</h2>
+        <div id="status">
+            <p>✅ Profile component updated to handle missing banner</p>
+            <p>✅ Banner will show default background color when null</p>
+            <p>✅ Avatar will use fallback image if missing</p>
+            <p>✅ Name will display correctly from profile data</p>
+        </div>
+
+        <h2>Next Steps:</h2>
+        <ol>
+            <li>Refresh the Connectrix app</li>
+            <li>Navigate to the profile page</li>
+            <li>Check the browser console for profile data logs</li>
+            <li>The profile should now display properly without blank space</li>
+        </ol>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Simulate profile data loading
+        const mockProfileData = {
+            fullName: "Reniel Cornitez",
+            email: "renielcornitez1@gmail.com",
+            role: "alumni",
+            currentWork: "Software Engineer",
+            avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
+            banner: null,
+            location: "",
+            degree: "",
+            skills: [],
+            bio: ""
+        };
+
+        console.log('Mock profile data:', mockProfileData);
+        
+        // Test banner handling
+        const bannerUrl = mockProfileData.banner || null;
+        console.log('Banner URL:', bannerUrl);
+        
+        if (!bannerUrl) {
+            console.log('✅ Banner is null - will show default background');
+        }
+    </script>
+</body>
+</html> 

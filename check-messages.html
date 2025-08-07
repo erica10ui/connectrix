@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Message Cleanup Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .button { background: #1976d2; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 10px; }
+        .result { background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Message Cleanup Tool</h1>
+        
+        <div>
+            <button class="button" onclick="checkMessages()">Check Messages</button>
+            <button class="button" onclick="cleanOrphanedMessages()">Clean Orphaned Messages</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, doc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZc0RP-38SbnsEhQPwlidr7St5vqDD_fQ",
+            authDomain: "connectrix-32033.firebaseapp.com",
+            projectId: "connectrix-32033",
+            storageBucket: "connectrix-32033.firebasestorage.app",
+            messagingSenderId: "902629175878",
+            appId: "1:902629175878:web:ca4b7196e9a6b40a285047",
+            measurementId: "G-BYMEBD20BX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.checkMessages = async function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="result">Checking messages...</div>';
+            
+            try {
+                const messagesSnapshot = await getDocs(collection(db, 'messages'));
+                const profilesSnapshot = await getDocs(collection(db, 'profiles'));
+                
+                const validUserIds = new Set();
+                profilesSnapshot.docs.forEach(doc => validUserIds.add(doc.id));
+                
+                let orphanedMessages = [];
+                let totalMessages = 0;
+                
+                messagesSnapshot.docs.forEach(doc => {
+                    totalMessages++;
+                    const data = doc.data();
+                    if (data.senderId && !validUserIds.has(data.senderId)) {
+                        orphanedMessages.push({
+                            id: doc.id,
+                            senderId: data.senderId,
+                            message: data.message || 'No message'
+                        });
+                    }
+                });
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h3>📊 Message Analysis</h3>
+                        <p><strong>Total Messages:</strong> ${totalMessages}</p>
+                        <p><strong>Valid Users:</strong> ${validUserIds.size}</p>
+                        <p><strong>Orphaned Messages:</strong> ${orphanedMessages.length}</p>
+                        ${orphanedMessages.length > 0 ? `
+                            <h4>Orphaned Messages:</h4>
+                            <ul>
+                                ${orphanedMessages.map(msg => `
+                                    <li>ID: ${msg.id} | Sender: ${msg.senderId} | Message: ${msg.message.substring(0, 50)}...</li>
+                                `).join('')}
+                            </ul>
+                        ` : '<p>✅ No orphaned messages found!</p>'}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+            }
+        };
+
+        window.cleanOrphanedMessages = async function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="result">Cleaning orphaned messages...</div>';
+            
+            try {
+                const messagesSnapshot = await getDocs(collection(db, 'messages'));
+                const profilesSnapshot = await getDocs(collection(db, 'profiles'));
+                
+                const validUserIds = new Set();
+                profilesSnapshot.docs.forEach(doc => validUserIds.add(doc.id));
+                
+                let deletedCount = 0;
+                
+                for (const doc of messagesSnapshot.docs) {
+                    const data = doc.data();
+                    if (data.senderId && !validUserIds.has(data.senderId)) {
+                        await deleteDoc(doc.ref);
+                        deletedCount++;
+                    }
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h3>✅ Cleanup Complete!</h3>
+                        <p><strong>Deleted Messages:</strong> ${deletedCount}</p>
+                        <p>All orphaned messages have been removed.</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+            }
+        };
+    </script>
+</body>
+</html> 
